@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="ll_asset_asset_rule" model="ir.rule">
+        <field name="name">Asset: Multi-Company</field>
+        <field name="model_id" ref="model_ll_asset_asset"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="ll_asset_issuance_rule" model="ir.rule">
+        <field name="name">Asset Issuance: Multi-Company</field>
+        <field name="model_id" ref="model_ll_asset_issuance"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('ll_asset_management.group_asset_officer')), (4, ref('ll_asset_management.group_asset_manager'))]"/>
+    </record>
+
+    <record id="ll_asset_issuance_own_record" model="ir.rule">
+        <field name="name">Asset Issuance user: See Own Request Only</field>
+        <field name="model_id" ref="model_ll_asset_issuance"/>
+        <field name="domain_force">[('requester_employee_id.user_id.id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('ll_asset_management.group_asset_user'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <record id="ll_asset_return_rule" model="ir.rule">
+        <field name="name">Asset Return: Multi-Company</field>
+        <field name="model_id" ref="model_ll_asset_return"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('ll_asset_management.group_asset_officer')), (4, ref('ll_asset_management.group_asset_manager'))]"/>
+    </record>
+
+    <record id="ll_asset_return_own_record" model="ir.rule">
+        <field name="name">Asset Return user: See Own Request Only</field>
+        <field name="model_id" ref="model_ll_asset_return"/>
+        <field name="domain_force">[('requester_employee_id.user_id.id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('ll_asset_management.group_asset_user'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <record id="ll_asset_location_rule" model="ir.rule">
+        <field name="name">Asset Location: Multi-Company</field>
+        <field name="model_id" ref="model_ll_asset_location"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>

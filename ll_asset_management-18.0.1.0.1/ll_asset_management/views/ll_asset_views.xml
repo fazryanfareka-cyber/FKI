@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_ll_asset_asset_list" model="ir.ui.view">
+            <field name="name">view.ll.asset.asset.list</field>
+            <field name="model">ll.asset.asset</field>
+            <field name="arch" type="xml">
+                <list string="Asset List">
+                    <field name="name"/>
+                    <field name="asset_category_id"/>
+                    <field name="serial_number"/>
+                    <field name="asset_owner_id"/>
+                    <field name="asset_active_loc_id"/>
+                    <!--                    <field name="asset_status"/>-->
+                    <field name="asset_reference" optional="hide"/>
+                    <field name="state" widget="badge"
+                           decoration-muted="state == 'draft'"
+                           decoration-info="state  == 'available'"
+                           decoration-warning="state  in ['req_processing', 'ret_processing']"
+                           decoration-success="state == 'allocated'"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_ll_asset_asset_form" model="ir.ui.view">
+            <field name="name">view.ll.asset.asset.form</field>
+            <field name="model">ll.asset.asset</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_asset_draft" string="Set to draft" type="object" class="oe_highlight"
+                                invisible="state != 'available'"
+                                groups="ll_asset_management.group_asset_manager"/>
+                        <button name="action_asset_confirm" string="Confirm" type="object" class="oe_highlight"
+                                invisible="state != 'draft'"
+                                groups="ll_asset_management.group_asset_officer,ll_asset_management.group_asset_manager"/>
+
+                        <field name="state" widget="statusbar" statusbar_visible="draft,available,allocated"/>
+                    </header>
+                    <sheet>
+                        <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name" placeholder="e.g. Asus/Samsung/Epson xxx123"
+                                       readonly="state != 'draft'"/>
+                            </h1>
+                        </div>
+<!--   xxxxxxxxxxxxxxxxxxxxxxxx invisible fields xxxxxxxxxxxxxxxxxxxxx -->
+<!--                        <div>-->
+                        <div invisible="1">
+                            <field name="current_company_id"/>
+                            <field name="show_company"/>
+                            <field name="prev_asset_issuance_id"/>
+                            <field name="prev_asset_return_id"/>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="asset_category_id" readonly="state != 'draft'"/>
+                                <field name="serial_number" readonly="state != 'draft'"/>
+                                <field name="warranty_start" readonly="state != 'draft'"/>
+                                <field name="warranty_end" readonly="state != 'draft'"/>
+                            </group>
+                            <group>
+                                <field name="asset_owner_id" readonly="state != 'draft'"/>
+                                <field name="asset_loc_id" readonly="state != 'draft'"/>
+                                <field name="asset_active_loc_id"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page name="asset_details" string="Asset Details">
+                                <group>
+                                    <field name="description" readonly="state != 'draft'"/>
+                                </group>
+                            </page>
+
+                            <page name="transaction_details" string="Transaction Details">
+                                <group>
+                                    <div name="no_transaction_notice"
+                                         invisible="asset_issuance_id or asset_return_id">
+                                        <div class="o_form_label text-success">
+                                            This asset has no Transaction details linked.
+                                        </div>
+                                    </div>
+                                    <group string="Issuance Details" name="issuance_details"
+                                           invisible="not asset_issuance_id">
+                                        <field name="asset_issuance_id"/>
+                                        <field name="issuance_req_type" invisible="issuance_req_type == False"
+                                               readonly="1"/>
+                                        <field name="issuance_req_emp_id" invisible="issuance_req_type != 'is_employee'"
+                                               readonly="1"/>
+                                        <field name="issuance_req_company_id"
+                                               invisible="issuance_req_type != 'is_company'" readonly="1"/>
+                                        <field name="issuance_req_company_emp_id"
+                                               invisible="issuance_req_company_id == False" readonly="1"/>
+                                        <field name="issuance_req_dept_id"
+                                               invisible="issuance_req_type != 'is_department'" readonly="1"/>
+                                        <field name="issuance_req_dept_manager_id"
+                                               invisible="issuance_req_dept_id == False" readonly="1"/>
+                                        <field name="issuance_location_id" invisible="issuance_location_id == False"
+                                               readonly="1"/>
+                                        <field name="issuance_status" invisible="issuance_status == False"
+                                               readonly="1"/>
+                                    </group>
+                                    <group string="Return Details" name="return_details"
+                                           invisible="not asset_return_id">
+                                        <field name="asset_return_id"/>
+                                        <field name="return_req_type" invisible="return_req_type == False"
+                                               readonly="1"/>
+                                        <field name="return_req_emp_id" invisible="return_req_type != 'is_employee'"
+                                               readonly="1"/>
+                                        <field name="return_req_company_id" invisible="return_req_type != 'is_company'"
+                                               readonly="1"/>
+                                        <field name="return_req_company_emp_id"
+                                               invisible="return_req_company_id == False" readonly="1"/>
+                                        <field name="return_req_dept_id" invisible="return_req_type != 'is_department'"
+                                               readonly="1"/>
+                                        <field name="return_req_dept_manager_id" invisible="return_req_dept_id == False"
+                                               readonly="1"/>
+                                        <field name="return_location_id" invisible="return_location_id == False"
+                                               readonly="1"/>
+                                        <field name="return_status" invisible="return_status == False" readonly="1"/>
+                                    </group>
+                                </group>
+                            </page>
+
+                            <page string="Extra Information">
+                                <group>
+                                    <field name="company_id" invisible="show_company == False" readonly="True"/>
+                                    <field name="asset_reference"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_ll_asset_asset_search" model="ir.ui.view">
+            <field name="name">view.ll.asset.asset.search</field>
+            <field name="model">ll.asset.asset</field>
+            <field name="arch" type="xml">
+                <search string="Asset">
+
+                    <filter name="filter_unallocated" string="Unallocated" domain="[('state', '=', 'available')]"/>
+                    <filter name="filter_allocated" string="Allocated" domain="[('state', '=', 'allocated')]"/>
+                    <filter name="filter_archived" string="Archived" domain="[('active', '=', False)]"/>
+
+                    <field name="name"/>
+                    <field name="serial_number"/>
+
+                    <group expand="1" string="Group By">
+                        <filter name="group_asset_category_id" string="Category"
+                                context="{'group_by': 'asset_category_id'}"/>
+                        <filter name="group_state" string="Asset Status" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_ll_asset_asset" model="ir.actions.act_window">
+            <field name="name">Assets</field>
+            <field name="res_model">ll.asset.asset</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_ll_asset_asset_search"/>
+            <field name="context">{'search_default_group_state': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create an Asset
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

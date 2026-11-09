@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_ll_asset_return_list" model="ir.ui.view">
+            <field name="name">view.ll.asset.return.list</field>
+            <field name="model">ll.asset.return</field>
+            <field name="arch" type="xml">
+                <list string="Asset Return List">
+                    <field name="name"/>
+                    <field name="requester_type"/>
+                    <field name="requester_employee_id" optional="hide"/>
+                    <field name="requester_company_id" optional="hide"/>
+                    <field name="requester_company_employee_id" optional="hide"/>
+                    <field name="requester_department_id" optional="hide"/>
+                    <field name="requester_department_manager_id" optional="hide"/>
+                    <field name="location_id" optional="hide"/>
+                    <field name="return_date" optional="show"/>
+                    <field name="company_id" optional="show"/>
+                    <field name="state" widget="badge"
+                           decoration-muted="state in ['draft', 'cancelled']"
+                           decoration-primary="state == 'submitted'"
+                           decoration-info="state  == 'validated'"
+                           decoration-warning="state  == 'approved'"
+                           decoration-success="state == 'returned'"
+                           decoration-danger="state == 'rejected'"
+                    />
+                </list>
+            </field>
+        </record>
+
+        <record id="view_ll_asset_return_form" model="ir.ui.view">
+            <field name="name">view.ll.asset.return.form</field>
+            <field name="model">ll.asset.return</field>
+            <field name="arch" type="xml">
+                <form string="Asset Return Form">
+                    <header>
+                        <button name="action_btn_draft" string="Set to draft" type="object"
+                                class="oe_highlight" invisible="state not in ['submitted', 'cancelled']"
+                        />
+                        <button name="action_btn_submit" string="Submit" type="object"
+                                class="oe_highlight" invisible="state != 'draft'"
+                        />
+                        <button name="action_btn_validate" string="Validate" type="object"
+                                class="oe_highlight" invisible="state != 'submitted'"
+                                groups="ll_asset_management.group_asset_officer,ll_asset_management.group_asset_manager"
+                        />
+                        <button name="action_btn_approve" string="Approve" type="object"
+                                class="oe_highlight" invisible="state != 'validated'"
+                                groups="ll_asset_management.group_asset_manager"
+                        />
+                        <button name="action_btn_return" string="Return" type="object"
+                                class="oe_highlight" invisible="state != 'approved'"
+                                groups="ll_asset_management.group_asset_officer,ll_asset_management.group_asset_manager"
+                        />
+                        <button name="action_btn_cancel" string="Cancel" type="object"
+                                class="oe_highlight" invisible="state not in ['validated', 'approved']"
+                        />
+                        <button name="action_btn_reject" string="Reject" type="object"
+                                class="oe_highlight"
+                                invisible="state not in ['submitted', 'validated', 'approved', 'returned']"
+                                groups="ll_asset_management.group_asset_manager"
+                        />
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,submitted,validated,approved,returned"
+                        />
+
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <!--                      ************  invisible fields ***************** -->
+                        <!--                        <div>-->
+                        <div invisible="True">
+                            <field name="company_partner_id"/>
+                            <field name="show_company"/>
+                            <field name="helper_partner_id"/>
+                        </div>
+                        <group>
+                            <group string="Return Details">
+                                <field name="requester_type" readonly="state != 'draft'"/>
+                                <field name="requester_employee_id"
+                                       options="{'no_create_edit': True,'no_create':True}"
+                                       readonly="state != 'draft'"
+                                       invisible="requester_type != 'is_employee'"
+                                       required="requester_type == 'is_employee'"
+                                />
+                                <field name="requester_department_id"
+                                       options="{'no_create_edit': True,'no_create':True}"
+                                       readonly="state != 'draft'"
+                                       invisible="requester_type != 'is_department'"
+                                       required="requester_type == 'is_department'"
+                                />
+                                <field name="requester_department_manager_id"
+                                       invisible="requester_type != 'is_department'"
+                                />
+                                <field name="requester_company_id"
+                                       options="{'no_create_edit': True,'no_create':True}"
+                                       readonly="state != 'draft'"
+                                       invisible="requester_type != 'is_company'"
+                                       required="requester_type == 'is_company'"
+                                />
+                                <field name="requester_company_employee_id"
+                                       invisible="requester_type != 'is_company'"
+                                       required="requester_type == 'is_company'"
+                                       readonly="state != 'draft'"
+                                />
+                                <field name="location_id" readonly="state != 'draft'"/>
+                                <!--                                <field name="company_location_id" readonly="state != 'draft'"/>-->
+                            </group>
+                            <group string="Other Details">
+                                <field name="create_date"/>
+                                <field name="create_uid"/>
+                                <field name="company_id" invisible="show_company == False" readonly="True"/>
+                                <field name="return_date" invisible="not return_date"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Asset Details" name="return_asset_details">
+                                <field name="asset_return_line_ids" readonly="state != 'draft'">
+                                    <list editable="bottom">
+                                        <field name="asset_id"
+                                               options="{'no_create': True, 'no_create_edit': True}"
+                                               domain="[
+                                               ('state', '=', 'allocated'),
+                                               ('asset_active_loc_id', '=', parent.location_id),
+                                               ('issuance_req_emp_id', '=', parent.requester_employee_id),
+                                               ('issuance_req_company_id', '=', parent.requester_department_id),
+                                               ('issuance_req_dept_id', '=', parent.requester_company_id)
+                                           ]"/>
+                                        <!--                                        <field name="asset_id"/>-->
+                                        <field name="serial_number" readonly="1"/>
+                                        <field name="asset_category_id" readonly="1"/>
+                                        <field name="destination_location_id"/>
+                                        <field name="remarks"/>
+                                    </list>
+                                    <form>
+                                        <sheet>
+                                            <group>
+                                                <group>
+                                                    <field name="destination_location_id"/>
+                                                    <field name="asset_id"/>
+                                                    <field name="serial_number"/>
+                                                </group>
+                                                <group>
+                                                    <field name="asset_category_id"/>
+                                                    <field name="remarks"/>
+                                                </group>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </page>
+                            <!--                            <page string="Other Details">-->
+                            <!--                                <group>-->
+                            <!--                                    <field name="company_id" invisible="show_company == False" readonly="True"/>-->
+                            <!--                                </group>-->
+                            <!--                            </page>-->
+                            <page string="Notes">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_ll_asset_return_search" model="ir.ui.view">
+            <field name="name">view.ll.asset.return.search</field>
+            <field name="model">ll.asset.return</field>
+            <field name="arch" type="xml">
+                <search string="Asset Return Search">
+
+                    <filter name="filter_submitted" string="Submitted" domain="[('state', '=', 'submitted')]"/>
+                    <filter name="filter_validated" string="Validated" domain="[('state', '=', 'validated')]"/>
+                    <filter name="filter_approved" string="Approved" domain="[('state', '=', 'approved')]"/>
+                    <filter name="filter_returned" string="Returned" domain="[('state', '=', 'returned')]"/>
+
+                    <field name="name"/>
+
+                    <group expand="1" string="Group By">
+                        <filter name="group_requester_type" string="Requester Type"
+                                context="{'group_by': 'requester_type'}"/>
+                        <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    </group>
+
+                </search>
+            </field>
+        </record>
+
+        <record id="action_ll_asset_return" model="ir.actions.act_window">
+            <field name="name">Asset Return</field>
+            <field name="res_model">ll.asset.return</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_ll_asset_return_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a record.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

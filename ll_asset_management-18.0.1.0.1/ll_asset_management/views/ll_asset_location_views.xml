@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_ll_asset_location_list" model="ir.ui.view">
+            <field name="name">view.ll.asset.location.list</field>
+            <field name="model">ll.asset.location</field>
+            <field name="arch" type="xml">
+                <list string="Asset Location List">
+                    <field name="name"/>
+                    <field name="owner_id"/>
+                    <field name="location_for"/>
+                    <field name="company_id" optional="show"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_ll_asset_location_form" model="ir.ui.view">
+            <field name="name">view.ll.asset.location.form</field>
+            <field name="model">ll.asset.location</field>
+            <field name="arch" type="xml">
+                <form string="Asset Location Form">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_btn_assets" type="object" class="oe_stat_button" icon="fa-list">
+                                <field name="total_asset" widget="statinfo"/>
+                            </button>
+                        </div>
+                        <div class="oe_title mb24">
+                            <h1>
+                                <label for="name" string="Location Name"/>
+                                <field options="{'line_breaks': False}" widget="text" class="text-break" name="name"
+                                       default_focus="1"/>
+                            </h1>
+                        </div>
+
+                        <div invisible="1">
+<!--                        <div>-->
+                            <field name="show_company"/>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="owner_id"/>
+                            </group>
+                            <group>
+                                <field name="location_for"/>
+                                <field name="company_id" invisible="show_company == False"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="note"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_ll_asset_location_search" model="ir.ui.view">
+            <field name="name">view.ll.asset.location.search</field>
+            <field name="model">ll.asset.location</field>
+            <field name="arch" type="xml">
+                <search string="Asset Locations">
+
+                    <filter name="filter_stock" string="Asset Stock" domain="[('location_for', '=', 'asset_stock')]"/>
+                    <filter name="filter_requester" string="Requester" domain="[('location_for', '=', 'requester')]"/>
+
+                    <field name="name"/>
+                    <field name="owner_id"/>
+                    <field name="location_for"/>
+
+                    <group expand="1" string="Group By">
+                        <filter name="group_owner" string="Owner" context="{'group_by': 'owner_id'}"/>
+                        <filter name="group_location_for" string="Location Type"
+                                context="{'group_by': 'location_for'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_ll_asset_location" model="ir.actions.act_window">
+            <field name="name">Asset Location</field>
+            <field name="res_model">ll.asset.location</field>
+            <field name="search_view_id" ref="view_ll_asset_location_search"/>
+        <field name="context">{'search_default_group_location_for': 1}</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create an Asset Location
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

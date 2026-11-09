@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+
+        <record id="ll_asset_asset_sequence" model="ir.sequence">
+            <field name="name">Asset Sequence</field>
+            <field name="code">ll.asset.asset.sequence</field>
+            <field name="padding">5</field>
+            <field name="prefix">ASSET/%(year)s/</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="ll_asset_issuance_sequence" model="ir.sequence">
+            <field name="name">Asset Issuance Sequence</field>
+            <field name="code">ll.asset.issuance.sequence</field>
+            <field name="padding">5</field>
+            <field name="prefix">ASSET-ISS/%(year)s/</field>
+            <field eval="1" name="number_increment"/>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="ll_asset_return_sequence" model="ir.sequence">
+            <field name="name">Asset Return Sequence</field>
+            <field name="code">ll.asset.return.sequence</field>
+            <field name="padding">5</field>
+            <field name="prefix">ASSET-RET/%(year)s/</field>
+            <field eval="1" name="number_increment"/>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

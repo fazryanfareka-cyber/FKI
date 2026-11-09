@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_ll_asset_category_list" model="ir.ui.view">
+            <field name="name">view.ll.asset.category.list</field>
+            <field name="model">ll.asset.category</field>
+            <field name="arch" type="xml">
+                <list string="Asset Category List" editable="top">
+                    <field name="name"/>
+                    <field name="desc"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_ll_asset_category" model="ir.actions.act_window">
+            <field name="name">Asset Category</field>
+            <field name="res_model">ll.asset.category</field>
+            <field name="view_id" ref="view_ll_asset_category_list"/>
+            <field name="view_mode">list</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create an Asset Category
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>
